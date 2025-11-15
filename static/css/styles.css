@@ -16,14 +16,32 @@ nav {
     margin: 20px 0;
 }
 
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+nav li {
+    margin: 0;
+}
+
 nav a {
     color: #fff;
     text-decoration: none;
     margin: 0 15px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
 }
 
 nav a:hover {
-    text-decoration: underline;
+    background-color: #555;
+    text-decoration: none;
 }
 
 .container {
@@ -49,4 +67,124 @@ nav a:hover {
     position: relative;
     bottom: 0;
     width: 100%;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #545b62;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-small {
+    padding: 5px 10px;
+    font-size: 0.8em;
+}
+
+/* Alert Styles */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert-info {
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+table th, table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+/* Form Styles */
+form {
+    margin: 20px 0;
+}
+
+form p {
+    margin: 15px 0;
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+form input, form select, form textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Checkout Options */
+.checkout-options {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.checkout-options p {
+    margin-bottom: 10px;
+}
+
+/* Links */
+.signup-link, .login-link {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.signup-link a, .login-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.signup-link a:hover, .login-link a:hover {
+    text-decoration: underline;
 }

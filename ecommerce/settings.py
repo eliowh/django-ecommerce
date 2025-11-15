@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'apps.payments',
 ]
 
+# Use the project local custom user model
+AUTH_USER_MODEL = 'users.User'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -115,6 +118,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Authentication
+LOGIN_URL = '/users/login/'
+LOGIN_REDIRECT_URL = '/products/'
+LOGOUT_REDIRECT_URL = '/products/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

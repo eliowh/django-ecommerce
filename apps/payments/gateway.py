@@ -27,3 +27,12 @@ class PaymentGateway:
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
         }
+
+
+def process_payment(amount, currency='USD', payment_method=None, **kwargs):
+    """Compatibility wrapper used by views.py — creates a PaymentGateway and calls create_payment.
+
+    amount is expected to be a numeric or string value acceptable to the gateway.
+    """
+    gw = PaymentGateway()
+    return gw.create_payment(amount=amount, currency=currency, payment_method=payment_method, **kwargs)
