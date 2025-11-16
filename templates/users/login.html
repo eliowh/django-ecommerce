@@ -1,18 +1,35 @@
 {% extends 'base.html' %}
-
-{% block title %}Login{% endblock %}
+{% load static %}
 
 {% block content %}
-  <div class="container">
-    <h2>Login</h2>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit">Log in</button>
-    </form>
-    
-    <div class="signup-link">
-      <p>Don't have an account? <a href="{% url 'users:register' %}">Sign up here</a></p>
+<div class="page-shell">
+    <div class="page-shell-card page-shell-card--narrow">
+        <h2 class="page-title">Welcome back</h2>
+        <p class="page-subtitle">Log in to continue your shopping.</p>
+
+        <form method="post" class="page-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <div>
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+                {{ form.username.errors }}
+            </div>
+
+            <div>
+                <label for="{{ form.password.id_for_label }}">Password</label>
+                {{ form.password }}
+                {{ form.password.errors }}
+            </div>
+
+            <button type="submit" class="primary-btn">Log in</button>
+        </form>
+
+        <p class="page-muted">
+            Don’t have an account yet?
+            <a href="{% url 'users:register' %}">Sign up</a>.
+        </p>
     </div>
-  </div>
+</div>
 {% endblock %}

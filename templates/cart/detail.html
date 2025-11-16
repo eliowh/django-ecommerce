@@ -1,67 +1,84 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block title %}Cart{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <h1>Your Shopping Cart</h1>
-        
-        {% if not is_authenticated %}
-            <div class="alert alert-info">
-                <p><strong>Guest Cart:</strong> You're shopping as a guest. <a href="{% url 'users:login' %}">Log in</a> or <a href="{% url 'users:register' %}">create an account</a> to save your cart.</p>
+<div class="container">
+    <h1>Your Shopping Cart</h1>
+
+    {# Guest notice #}
+    {% if not is_authenticated %}
+        <div class="alert alert-info">
+            <p>
+                <strong>Guest Cart:</strong> You're shopping as a guest.
+                <a href="{% url 'users:login' %}">Log in</a> or
+                <a href="{% url 'users:register' %}">create an account</a>
+                to save your cart.
+            </p>
+        </div>
+    {% endif %}
+
+    {% if cart_items %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>₱{{ item.product.price }}</td>
+                        <td>₱{{ item.total_price }}</td>
+                        <td>
+                            {% if is_authenticated %}
+                                {# logged in: item_id = CartItem.id #}
+                                <a href="{% url 'cart:remove' item.id %}"
+                                   class="btn btn-small btn-danger">
+                                    Remove
+                                </a>
+                            {% else %}
+                                {# guest: item_id = product.id #}
+                                <a href="{% url 'cart:remove' item.product.id %}"
+                                   class="btn btn-small btn-danger">
+                                    Remove
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Total: ₱{{ cart_total }}</h2>
+
+        {% if is_authenticated %}
+            <a href="{% url 'checkout:checkout' %}" class="btn">
+                Proceed to Checkout
+            </a>
+        {% else %}
+            <div class="checkout-options">
+                <p><strong>To checkout:</strong></p>
+                <a href="{% url 'users:login' %}?next={% url 'checkout:checkout' %}"
+                   class="btn">
+                    Login &amp; Checkout
+                </a>
+                <span> or </span>
+                <a href="{% url 'users:register' %}?next={% url 'checkout:checkout' %}"
+                   class="btn btn-secondary">
+                    Sign Up &amp; Checkout
+                </a>
             </div>
         {% endif %}
-        
-        {% if cart_items %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Total</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in cart_items %}
-                        <tr>
-                            <td>{{ item.product.name }}</td>
-                            <td>{{ item.quantity }}</td>
-                            <td>${{ item.product.price }}</td>
-                            <td>
-                                {% if is_authenticated %}
-                                    ${{ item.total_price }}
-                                {% else %}
-                                    ${{ item.total_price }}
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if is_authenticated %}
-                                    <a href="{% url 'cart:remove' item.id %}" class="btn btn-small btn-danger">Remove</a>
-                                {% else %}
-                                    <a href="{% url 'cart:remove' item.product.id %}" class="btn btn-small btn-danger">Remove</a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <h2>Total: ${{ cart_total }}</h2>
-            
-            {% if is_authenticated %}
-                <a href="{% url 'checkout:checkout' %}" class="btn">Proceed to Checkout</a>
-            {% else %}
-                <div class="checkout-options">
-                    <p><strong>To checkout:</strong></p>
-                    <a href="{% url 'users:login' %}?next={% url 'checkout:checkout' %}" class="btn">Login & Checkout</a>
-                    <span> or </span>
-                    <a href="{% url 'users:register' %}?next={% url 'checkout:checkout' %}" class="btn btn-secondary">Sign Up & Checkout</a>
-                </div>
-            {% endif %}
-        {% else %}
-            <p>Your cart is empty.</p>
-            <a href="{% url 'products:list' %}" class="btn">Continue Shopping</a>
-        {% endif %}
-    </div>
+    {% else %}
+        <p>Your cart is empty.</p>
+        <a href="{% url 'products:list' %}" class="btn">Continue Shopping</a>
+    {% endif %}
+</div>
 {% endblock %}

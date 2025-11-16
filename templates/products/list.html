@@ -1,22 +1,128 @@
 {% extends 'base.html' %}
-
-{% block title %}Products{% endblock %}
+{% load static %}
 
 {% block content %}
-  <div class="container">
-    <h1>Product List</h1>
-    <div class="product-list">
-      {% for product in products %}
-        <div class="product-item">
-          <h2>{{ product.name }}</h2>
-          <p>{{ product.description }}</p>
-          <p>Price: ${{ product.price }}</p>
-          <a href="{% url 'products:detail' product.id %}">View Details</a>
-        </div>
-      {% empty %}
-        <p>No products available.</p>
-        <p><a href="/admin/">Add some products in the admin</a></p>
-      {% endfor %}
+<div class="products-page-bg">
+    <div class="products-page-frame">
+        <!-- top white area like the "milk" header -->
+        <div class="products-hero">
+            <div class="products-hero-inner">
+                <div class="products-logo-row">
+                    <div class="products-logo">milk</div>
+                    <ul class="products-top-menu">
+                        <li>Yogurt</li>
+                        <li>Milk</li>
+                        <li>Blog</li>
+                    </ul>
+                    <div class="products-top-icons">
+                        <span>🔍</span>
+                        <span>♡</span>
+                        <span>🛒</span>
+                    </div>
+                </div>
+
+                <div class="products-hero-text">
+    <div>
+        <h2 class="products-title">Pick your flavor</h2>
+        <p class="products-subtitle">
+            Fresh and colorful drinks curated just for you. Swipe through and add your favorites to cart.
+        </p>
     </div>
-  </div>
+
+    <!-- ⬇️ Paste this here ⬇️ -->
+    <div class="products-filters">
+        <a href="{% url 'products:list' %}"
+           class="pill-button {% if active_category == 'all' %}pill-button--active{% endif %}">
+            All
+        </a>
+
+        <a href="{% url 'products:list' %}?category=milk"
+           class="pill-button {% if active_category == 'milk' %}pill-button--active{% endif %}">
+            Milk
+        </a>
+
+        <a href="{% url 'products:list' %}?category=yogurt"
+           class="pill-button {% if active_category == 'yogurt' %}pill-button--active{% endif %}">
+            Yogurt
+        </a>
+
+        <a href="{% url 'products:list' %}?category=specials"
+           class="pill-button {% if active_category == 'specials' %}pill-button--active{% endif %}">
+            Specials
+        </a>
+    </div>
+</div>
+
+                    <div class="products-filters">
+    <a href="{% url 'products:list' %}"
+       class="pill-button {% if active_category == 'all' %}pill-button--active{% endif %}">
+        All
+    </a>
+
+    <a href="{% url 'products:list' %}?category=milk"
+       class="pill-button {% if active_category == 'milk' %}pill-button--active{% endif %}">
+        Milk
+    </a>
+
+    <a href="{% url 'products:list' %}?category=yogurt"
+       class="pill-button {% if active_category == 'yogurt' %}pill-button--active{% endif %}">
+        Yogurt
+    </a>
+
+    <a href="{% url 'products:list' %}?category=specials"
+       class="pill-button {% if active_category == 'specials' %}pill-button--active{% endif %}">
+        Specials
+    </a>
+</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- pastel cards row -->
+        <div class="products-carousel-wrapper">
+            <button class="carousel-arrow carousel-arrow--left" type="button" id="productsPrev">‹</button>
+
+            <div class="products-carousel" id="productsCarousel">
+                {% if products %}
+                    {% for product in products %}
+                        <div class="product-card {% if forloop.first %}product-card--featured{% endif %}">
+                            <div class="product-image-wrap">
+                                <div class="product-image-oval"></div>
+
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                                {% else %}
+                                    <div class="product-image-placeholder">
+                                        {{ product.name|first }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="product-info">
+                                <p class="product-category">Flavor</p>
+                                <h3 class="product-name">{{ product.name }}</h3>
+                                <p class="product-size">500 ml</p>
+                            </div>
+
+                            <form method="post"
+                                  action="{% url 'cart:add' product.id %}"
+                                  class="product-actions">
+                                {% csrf_token %}
+                                <button type="submit" class="product-shop-button">
+                                    Shop
+                                </button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-products-text">
+                        No products yet. Add some products in the admin so cards show here.
+                    </p>
+                {% endif %}
+            </div>
+
+            <button class="carousel-arrow carousel-arrow--right" type="button" id="productsNext">›</button>
+        </div>
+    </div>
+</div>
 {% endblock %}

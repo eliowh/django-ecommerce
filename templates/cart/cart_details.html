@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-shell">
+    <div class="page-shell-card">
+        <h2 class="page-title">Your shopping cart</h2>
+
+        {% if user.is_authenticated %}
+            <p class="page-subtitle">
+                Items saved to your account, {{ user.username }}.
+            </p>
+        {% else %}
+            <p class="page-subtitle">
+                <span class="badge-soft">Guest cart</span>
+                You’re shopping as a guest. <a href="{% url 'users:login' %}">Log in</a> or
+                <a href="{% url 'users:register' %}">create an account</a> to save your cart.
+            </p>
+        {% endif %}
+
+        {% if cart_items %}
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>₱{{ item.product.price }}</td>
+                            <td>₱{{ item.quantity|mul:item.product.price }}</td>
+                        </tr>
+                    {% endfor %}
+                    <tr class="cart-total-row">
+                        <td colspan="3">Total</td>
+                        <td>₱{{ cart_total }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="margin-top: 20px; display:flex; gap:10px;">
+                <a href="{% url 'products:list' %}" class="primary-btn" style="background:#f0ebff; color:#51436f;">
+                    Continue shopping
+                </a>
+                <button class="primary-btn" type="button">
+                    Proceed to checkout
+                </button>
+            </div>
+        {% else %}
+            <p>No products yet. Add some products in the admin so cards show here.</p>
+            <a href="{% url 'products:list' %}" class="primary-btn" style="margin-top: 12px;">
+                Browse products
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

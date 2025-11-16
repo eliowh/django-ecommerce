@@ -1,0 +1,73 @@
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #d2c4c4;
+    margin: 0;
+    padding: 20px;
+}
+
+.cart-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(139, 163, 188, 0.06);
+}
+
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+}
+
+.cart-table th,
+.cart-table td {
+    padding: 12px;
+    border-bottom: 1px solid #efdcdc;
+    text-align: left;
+}
+
+.cart-table th {
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.qty-btn {
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    background: #bccbeb;
+}
+
+.item-qty {
+    width: 50px;
+    text-align: center;
+    padding: 4px;
+    margin: 0 4px;
+}
+
+.cart-summary {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    align-items: center;
+    font-size: 16px;
+}
+
+.cart-total-label {
+    font-weight: 600;
+}
+
+.checkout-btn {
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    background: #111827;
+    color: #fff;
+    font-size: 14px;
+}

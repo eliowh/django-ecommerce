@@ -1,19 +1,24 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}E-commerce Site{% endblock %}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/product.css' %}">
 </head>
 <body>
     <header>
-        <h1>E-commerce Site</h1>
+        <h1 class="site-logo">MILK</h1>
         <nav>
             <ul>
                 <li><a href="{% url 'products:list' %}">Products</a></li>
-                <li><a href="{% url 'cart:detail' %}">Cart</a></li>
+                <li><a href="{% url 'cart:cart_detail' %}">Cart</a></li>
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'checkout:checkout' %}">Checkout</a></li>
                     <li>Welcome, {{ user.username }}!</li>
@@ -32,7 +37,7 @@
     </main>
 
     <footer>
-        <p>&copy; {{ current_year }} E-commerce Site</p>
+        <p>&copy; {% now "Y" %} E-commerce Site</p>
     </footer>
     
     <script src="{% static 'js/main.js' %}"></script>

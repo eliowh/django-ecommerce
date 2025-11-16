@@ -1,9 +1,27 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Your profile{% endblock %}
+{% block title %}Profile{% endblock %}
 
 {% block content %}
-  <h2>Your profile</h2>
-  <p>Username: {{ request.user.username }}</p>
-  <p>Email: {{ request.user.email }}</p>
+<div class="container">
+    <h2>Your profile</h2>
+
+    {% if user.is_authenticated %}
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+
+        <!-- Add more fields if you have them in your custom user model -->
+
+        <p>
+            <a href="{% url 'users:logout' %}">Logout</a>
+        </p>
+    {% else %}
+        <p>You are not logged in.</p>
+        <p>
+            <a href="{% url 'users:login' %}">Login here</a>
+            or
+            <a href="{% url 'users:register' %}">create an account</a>.
+        </p>
+    {% endif %}
+</div>
 {% endblock %}

@@ -1,11 +1,13 @@
 from django.urls import path
 from . import views
 
-# Namespace for reverse lookups from templates like {% url 'products:list' %}
+# Namespace so templates can use {% url 'products:list' %}
 app_name = 'products'
 
 urlpatterns = [
-    # keep simple names 'list' and 'detail' so templates can use products:list / products:detail
+    # /products/
     path('', views.product_list, name='list'),
+
+    # /products/1/
     path('<int:pk>/', views.product_detail, name='detail'),
 ]
