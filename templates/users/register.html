@@ -1,18 +1,33 @@
 {% extends 'base.html' %}
-
-{% block title %}Register{% endblock %}
+{% load static %}
 
 {% block content %}
-  <div class="container">
-    <h2>Create Account</h2>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit">Create Account</button>
-    </form>
-    
-    <div class="login-link">
-      <p>Already have an account? <a href="{% url 'users:login' %}">Log in here</a></p>
+<div class="page-shell">
+    <div class="page-shell-card page-shell-card--narrow">
+        <h2 class="page-title">Create your account</h2>
+        <p class="page-subtitle">
+            Sign up to save your cart, track orders, and get a smoother checkout.
+        </p>
+
+        <form method="post" class="page-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="primary-btn">Sign up</button>
+        </form>
+
+        <p class="page-muted">
+            Already have an account?
+            <a href="{% url 'users:login' %}">Log in</a>.
+        </p>
     </div>
-  </div>
+</div>
 {% endblock %}
