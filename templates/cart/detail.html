@@ -40,13 +40,15 @@
                             {% if is_authenticated %}
                                 {# logged in: item_id = CartItem.id #}
                                 <a href="{% url 'cart:remove' item.id %}"
-                                   class="btn btn-small btn-danger">
+                                   class="btn btn-small btn-danger"
+                                   onclick="return confirmRemoveFromCart('{{ item.product.name }}', this.href)">
                                     Remove
                                 </a>
                             {% else %}
                                 {# guest: item_id = product.id #}
                                 <a href="{% url 'cart:remove' item.product.id %}"
-                                   class="btn btn-small btn-danger">
+                                   class="btn btn-small btn-danger"
+                                   onclick="return confirmRemoveFromCart('{{ item.product.name }}', this.href)">
                                     Remove
                                 </a>
                             {% endif %}
@@ -81,4 +83,51 @@
         <a href="{% url 'products:list' %}" class="btn">Continue Shopping</a>
     {% endif %}
 </div>
+
+<!-- Remove from Cart Confirmation Modal -->
+<div id="removeFromCartModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Remove from Cart</h3>
+            <span class="modal-close" onclick="closeModal('removeFromCartModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p id="removeFromCartMessage">Are you sure you want to remove this item from your cart?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('removeFromCartModal')">Cancel</button>
+            <button type="button" class="btn btn-danger" onclick="confirmRemove()">Remove</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentRemoveUrl = null;
+
+function confirmRemoveFromCart(productName, removeUrl) {
+    currentRemoveUrl = removeUrl;
+    document.getElementById('removeFromCartMessage').textContent = `Are you sure you want to remove "${productName}" from your cart?`;
+    document.getElementById('removeFromCartModal').style.display = 'block';
+    return false; // Prevent default link action
+}
+
+function confirmRemove() {
+    if (currentRemoveUrl) {
+        window.location.href = currentRemoveUrl;
+    }
+    closeModal('removeFromCartModal');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+    const removeModal = document.getElementById('removeFromCartModal');
+    if (event.target === removeModal) {
+        closeModal('removeFromCartModal');
+    }
+}
+</script>
 {% endblock %}

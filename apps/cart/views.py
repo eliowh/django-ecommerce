@@ -1,8 +1,38 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from django.contrib import messages
 from .models import Cart, CartItem
 from apps.products.models import Product
 from django.contrib.auth.decorators import login_required
+
+def merge_session_cart_to_user_cart(request, user):
+    """Merge anonymous session cart with user's database cart when they log in"""
+    session_cart = request.session.get('cart', {})
+    
+    if session_cart:
+        # Get or create user's cart
+        cart, created = Cart.objects.get_or_create(user=user)
+        
+        for product_id, quantity in session_cart.items():
+            try:
+                product = Product.objects.get(id=product_id)
+                cart_item, created = CartItem.objects.get_or_create(
+                    cart=cart, 
+                    product=product,
+                    defaults={'quantity': quantity}
+                )
+                
+                if not created:
+                    # If item already exists, add the quantities
+                    cart_item.quantity += quantity
+                    cart_item.save()
+                    
+            except Product.DoesNotExist:
+                continue
+        
+        # Clear the session cart after merging
+        request.session['cart'] = {}
+        request.session.modified = True
 
 def cart_detail(request):
     """Show cart details for both authenticated and anonymous users"""
@@ -39,13 +69,29 @@ def cart_detail(request):
         'is_authenticated': request.user.is_authenticated
     })
 
-def add_to_cart(request):
-    """Add items to cart for both authenticated and anonymous users"""
+def add_to_cart(request, product_id):
+    """Add product to cart for both authenticated and anonymous users"""
     if request.method == 'POST':
-        product_id = request.POST.get('product_id')
-        quantity = int(request.POST.get('quantity', 1))
+        try:
+            quantity = int(request.POST.get('quantity', 1))
+        except (ValueError, TypeError):
+            messages.error(request, 'Invalid quantity. Please enter a valid number.')
+            return redirect('products:list')
         
         product = get_object_or_404(Product, id=product_id)
+        
+        # Validate quantity
+        if quantity < 1:
+            messages.error(request, 'Quantity must be at least 1.')
+            return redirect('products:list')
+        
+        if quantity > product.stock:
+            messages.error(request, f'Only {product.stock} items available in stock for {product.name}.')
+            return redirect('products:list')
+        
+        if quantity > 999:
+            messages.error(request, 'Maximum quantity per item is 999.')
+            return redirect('products:list')
         
         if request.user.is_authenticated:
             # For logged-in users, use database cart
@@ -70,7 +116,8 @@ def add_to_cart(request):
             request.session['cart'] = session_cart
             request.session.modified = True
         
-        return redirect('cart:detail')
+        messages.success(request, f'Added {quantity} x {product.name} to your cart!')
+        return redirect('products:list')
     return redirect('products:list')
 
 def remove_from_cart(request, item_id):

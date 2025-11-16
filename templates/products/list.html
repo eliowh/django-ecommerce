@@ -27,9 +27,16 @@
         <p class="products-subtitle">
             Fresh and colorful drinks curated just for you. Swipe through and add your favorites to cart.
         </p>
+        
+        {% if messages %}
+            <div class="messages-container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 
-    <!-- ⬇️ Paste this here ⬇️ -->
     <div class="products-filters">
         <a href="{% url 'products:list' %}"
            class="pill-button {% if active_category == 'all' %}pill-button--active{% endif %}">
@@ -53,76 +60,221 @@
     </div>
 </div>
 
-                    <div class="products-filters">
-    <a href="{% url 'products:list' %}"
-       class="pill-button {% if active_category == 'all' %}pill-button--active{% endif %}">
-        All
-    </a>
+        <!-- Products display area inside the main card -->
+        <div class="products-carousel-wrapper">
+            <div class="products-display-area">
+                        <button class="carousel-arrow carousel-arrow--left" type="button" id="productsPrev">‹</button>
 
-    <a href="{% url 'products:list' %}?category=milk"
-       class="pill-button {% if active_category == 'milk' %}pill-button--active{% endif %}">
-        Milk
-    </a>
+                        <div class="products-carousel" id="productsCarousel">
+                            {% if products %}
+                                {% for product in products %}
+                                    <div class="product-card {% if forloop.first %}product-card--featured{% endif %}">
+                                        <div class="product-image-wrap">
+                                            <div class="product-image-oval"></div>
 
-    <a href="{% url 'products:list' %}?category=yogurt"
-       class="pill-button {% if active_category == 'yogurt' %}pill-button--active{% endif %}">
-        Yogurt
-    </a>
+                                            {% if product.image %}
+                                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                                            {% else %}
+                                                <div class="product-image-placeholder">
+                                                    {{ product.name|first }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
 
-    <a href="{% url 'products:list' %}?category=specials"
-       class="pill-button {% if active_category == 'specials' %}pill-button--active{% endif %}">
-        Specials
-    </a>
-</div>
+                                        <div class="product-info">
+                                            <p class="product-category">Flavor</p>
+                                            <h3 class="product-name">{{ product.name }}</h3>
+                                            <p class="product-size">500 ml</p>
+                                        </div>
+
+                                        <form method="post"
+                                              action="{% url 'cart:add' product.id %}"
+                                              class="product-actions"
+                                              data-product-name="{{ product.name|escapejs }}"
+                                              data-product-stock="{{ product.stock }}"
+                                              data-product-id="{{ product.id }}"
+                                              onsubmit="return confirmAddToCartFromForm(this)">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="quantity" value="1" id="hiddenQuantity{{ product.id }}">
+                                            <button type="submit" class="product-shop-button">
+                                                Add to Cart
+                                            </button>
+                                        </form>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="no-products-text">
+                                    No products yet. Add some products in the admin so cards show here.
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <button class="carousel-arrow carousel-arrow--right" type="button" id="productsNext">›</button>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
-        <!-- pastel cards row -->
-        <div class="products-carousel-wrapper">
-            <button class="carousel-arrow carousel-arrow--left" type="button" id="productsPrev">‹</button>
-
-            <div class="products-carousel" id="productsCarousel">
-                {% if products %}
-                    {% for product in products %}
-                        <div class="product-card {% if forloop.first %}product-card--featured{% endif %}">
-                            <div class="product-image-wrap">
-                                <div class="product-image-oval"></div>
-
-                                {% if product.image %}
-                                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                                {% else %}
-                                    <div class="product-image-placeholder">
-                                        {{ product.name|first }}
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <div class="product-info">
-                                <p class="product-category">Flavor</p>
-                                <h3 class="product-name">{{ product.name }}</h3>
-                                <p class="product-size">500 ml</p>
-                            </div>
-
-                            <form method="post"
-                                  action="{% url 'cart:add' product.id %}"
-                                  class="product-actions">
-                                {% csrf_token %}
-                                <button type="submit" class="product-shop-button">
-                                    Shop
-                                </button>
-                            </form>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p class="no-products-text">
-                        No products yet. Add some products in the admin so cards show here.
-                    </p>
-                {% endif %}
+<!-- Add to Cart Confirmation Modal -->
+<div id="addToCartModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Add to Cart</h3>
+            <span class="modal-close" onclick="closeModal('addToCartModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p id="addToCartMessage">Add item to your cart</p>
+            <div class="form-group" style="margin-top: 15px;">
+                <label for="modalQuantity">Quantity:</label>
+                <input type="number" 
+                       id="modalQuantity" 
+                       min="1" 
+                       max="999" 
+                       value="1" 
+                       style="width: 100px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                <div id="quantityError" style="color: #d32f2f; font-size: 0.85rem; margin-top: 5px; display: none;"></div>
             </div>
-
-            <button class="carousel-arrow carousel-arrow--right" type="button" id="productsNext">›</button>
+            <div style="font-size: 0.85rem; color: #666; margin-top: 8px;">
+                <span id="confirmationinfo">Please confirm your order.</span><span id="stockCount" style="display: none;"></span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('addToCartModal')">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="confirmAdd()">Add to Cart</button>
         </div>
     </div>
 </div>
+
+<script>
+let currentForm = null;
+let currentProductId = null;
+let maxStock = 0;
+
+function confirmAddToCartFromForm(form) {
+    currentForm = form;
+    const productName = form.dataset.productName;
+    const stock = parseInt(form.dataset.productStock);
+    const productId = parseInt(form.dataset.productId);
+    
+    currentProductId = productId;
+    maxStock = stock;
+    
+    document.getElementById('addToCartMessage').textContent = `Add "${productName}" to your cart:`;
+    document.getElementById('stockCount').textContent = stock;
+    document.getElementById('modalQuantity').value = 1;
+    document.getElementById('modalQuantity').max = stock;
+    
+    // Clear any previous errors
+    hideQuantityError();
+    
+    document.getElementById('addToCartModal').style.display = 'block';
+    document.getElementById('modalQuantity').focus();
+    return false; // Prevent form submission
+}
+
+function confirmAddToCart(productName, stock, productId) {
+    // Keep this for backward compatibility if needed
+    return confirmAddToCartFromForm({
+        dataset: { productName, productStock: stock, productId }
+    });
+}
+
+function validateQuantity() {
+    const quantityInput = document.getElementById('modalQuantity');
+    const quantity = parseInt(quantityInput.value);
+    
+    // Clear previous error
+    hideQuantityError();
+    
+    // Check if input is empty or not a number
+    if (!quantityInput.value || isNaN(quantity)) {
+        showQuantityError('Please enter a valid number');
+        return false;
+    }
+    
+    // Check if quantity is less than 1
+    if (quantity < 1) {
+        showQuantityError('Quantity must be at least 1');
+        return false;
+    }
+    
+    // Check if quantity exceeds stock
+    if (quantity > maxStock) {
+        showQuantityError(`Only ${maxStock} items available in stock`);
+        return false;
+    }
+    
+    // Check for decimal values
+    if (quantity !== parseFloat(quantityInput.value)) {
+        showQuantityError('Quantity must be a whole number');
+        return false;
+    }
+    
+    return true;
+}
+
+function showQuantityError(message) {
+    const errorDiv = document.getElementById('quantityError');
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+}
+
+function hideQuantityError() {
+    document.getElementById('quantityError').style.display = 'none';
+}
+
+function confirmAdd() {
+    if (!validateQuantity()) {
+        return; // Don't submit if validation fails
+    }
+    
+    if (currentForm && currentProductId) {
+        const quantity = document.getElementById('modalQuantity').value;
+        
+        // Update the hidden quantity field in the form
+        document.getElementById('hiddenQuantity' + currentProductId).value = quantity;
+        
+        // Remove the onsubmit handler temporarily to avoid infinite loop
+        currentForm.onsubmit = null;
+        currentForm.submit();
+    }
+    closeModal('addToCartModal');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+    hideQuantityError();
+}
+
+// Add enter key support for quantity input
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('modalQuantity').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            confirmAdd();
+        }
+    });
+    
+    // Real-time validation as user types
+    document.getElementById('modalQuantity').addEventListener('input', function() {
+        const quantity = parseInt(this.value);
+        if (this.value && !isNaN(quantity) && quantity > maxStock) {
+            showQuantityError(`Only ${maxStock} items available in stock`);
+        } else if (this.value && (isNaN(quantity) || quantity < 1)) {
+            showQuantityError('Please enter a valid quantity (1 or more)');
+        } else {
+            hideQuantityError();
+        }
+    });
+});
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+    const addModal = document.getElementById('addToCartModal');
+    if (event.target === addModal) {
+        closeModal('addToCartModal');
+    }
+}
+</script>
 {% endblock %}

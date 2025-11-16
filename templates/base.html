@@ -13,16 +13,18 @@
     <link rel="stylesheet" href="{% static 'css/product.css' %}">
 </head>
 <body>
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
     <header>
         <h1 class="site-logo">MILK</h1>
         <nav>
             <ul>
                 <li><a href="{% url 'products:list' %}">Products</a></li>
-                <li><a href="{% url 'cart:cart_detail' %}">Cart</a></li>
+                <li><a href="{% url 'cart:detail' %}">Cart</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'checkout:checkout' %}">Checkout</a></li>
+                    <li><a href="#" onclick="checkCartBeforeCheckout(); return false;">Checkout</a></li>
                     <li>Welcome, {{ user.username }}!</li>
-                    <li><a href="{% url 'users:logout' %}">Logout</a></li>
+                    <li><a href="#" onclick="confirmLogout(); return false;">Logout</a></li>
                 {% else %}
                     <li><a href="{% url 'users:login' %}">Login</a></li>
                     <li><a href="{% url 'users:register' %}">Sign Up</a></li>
@@ -39,6 +41,24 @@
     <footer>
         <p>&copy; {% now "Y" %} E-commerce Site</p>
     </footer>
+
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Logout</h3>
+                <span class="modal-close" onclick="closeModal('logoutModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to logout?</p>
+                <p class="modal-note">You will need to login again to access your account.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('logoutModal')">Cancel</button>
+                <a href="{% url 'users:logout' %}" class="btn btn-danger">Yes, Logout</a>
+            </div>
+        </div>
+    </div>
     
     <script src="{% static 'js/main.js' %}"></script>
 </body>

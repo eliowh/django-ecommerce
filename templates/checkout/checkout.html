@@ -3,26 +3,197 @@
 {% block title %}Checkout{% endblock %}
 
 {% block content %}
-  <div class="container">
+<div class="container">
     <h1>Checkout</h1>
-    <form method="POST" action="{% url 'checkout:process_payment' %}">
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="address">Shipping Address:</label>
-        <input type="text" id="address" name="address" required>
-      </div>
-      <div class="form-group">
-        <label for="amount">Amount:</label>
-        <input type="number" id="amount" name="amount" step="0.01" required>
-      </div>
-      <div class="form-group">
-        <label for="payment_method">Payment Method:</label>
-        <select id="payment_method" name="payment_method" required>
-          <option value="credit_card">Credit Card</option>
-          <option value="paypal">PayPal</option>
-        </select>
-      </div>
-      <button type="submit">Complete Purchase</button>
-    </form>
-  </div>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    
+    <div class="checkout-layout">
+        <!-- Order Summary Section -->
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            
+            <div class="order-items">
+                {% for item in cart_items %}
+                    <div class="order-item">
+                        <div class="item-info">
+                            <h4>{{ item.product.name }}</h4>
+                            <p class="item-category">{{ item.product.category.name }}</p>
+                        </div>
+                        <div class="item-quantity">
+                            <span>Qty: {{ item.quantity }}</span>
+                        </div>
+                        <div class="item-price">
+                            <span>₱{{ item.price|floatformat:2 }}</span>
+                        </div>
+                        <div class="item-total">
+                            <strong>₱{{ item.total_price|floatformat:2 }}</strong>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Order Breakdown -->
+            <div class="order-breakdown">
+                <div class="breakdown-row">
+                    <span>Subtotal:</span>
+                    <span>₱{{ subtotal|floatformat:2 }}</span>
+                </div>
+                
+                <div class="breakdown-row">
+                    <span>Shipping Fee:</span>
+                    <span>
+                        {% if shipping_fee == 0 %}
+                            <span class="free-shipping">FREE</span>
+                            <small>(Orders over ₱{{ free_shipping_threshold }})</small>
+                        {% else %}
+                            ₱{{ shipping_fee|floatformat:2 }}
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="breakdown-row">
+                    <span>VAT ({{ tax_rate|floatformat:0 }}%):</span>
+                    <span>₱{{ tax_amount|floatformat:2 }}</span>
+                </div>
+                
+                <div class="breakdown-row total-row">
+                    <strong>Total Amount:</strong>
+                    <strong class="total-amount">₱{{ total_amount|floatformat:2 }}</strong>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Checkout Form Section -->
+        <div class="checkout-form">
+            <h2>Shipping & Payment Information</h2>
+            
+            <form method="POST" action="{% url 'checkout:process_payment' %}" class="payment-form">
+                {% csrf_token %}
+                
+                <!-- Customer Information -->
+                <div class="form-section">
+                    <h3>Customer Information</h3>
+                    
+                    {% if is_authenticated %}
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" value="{{ user.email }}" readonly class="readonly-field">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Full Name:</label>
+                            <input type="text" name="full_name" value="{{ user.get_full_name }}" required>
+                        </div>
+                    {% else %}
+                        <div class="form-group">
+                            <label for="email">Email Address:</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="full_name">Full Name:</label>
+                            <input type="text" id="full_name" name="full_name" required>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number:</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                </div>
+                
+                <!-- Shipping Information -->
+                <div class="form-section">
+                    <h3>Shipping Address</h3>
+                    
+                    <div class="form-group">
+                        <label for="address_line_1">Address Line 1:</label>
+                        <input type="text" id="address_line_1" name="address_line_1" placeholder="Street address" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address_line_2">Address Line 2:</label>
+                        <input type="text" id="address_line_2" name="address_line_2" placeholder="Apartment, suite, etc. (optional)">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City:</label>
+                            <input type="text" id="city" name="city" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="province">Province:</label>
+                            <input type="text" id="province" name="province" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="postal_code">Postal Code:</label>
+                            <input type="text" id="postal_code" name="postal_code" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Payment Information -->
+                <div class="form-section">
+                    <h3>Payment Method</h3>
+                    
+                    <div class="payment-methods">
+                        <label class="payment-option">
+                            <input type="radio" name="payment_method" value="credit_card" checked>
+                            <span class="payment-label">
+                                <strong>Credit Card</strong>
+                                <small>Visa, Mastercard, American Express</small>
+                            </span>
+                        </label>
+                        
+                        <label class="payment-option">
+                            <input type="radio" name="payment_method" value="gcash">
+                            <span class="payment-label">
+                                <strong>GCash</strong>
+                                <small>Pay using your GCash wallet</small>
+                            </span>
+                        </label>
+                        
+                        <label class="payment-option">
+                            <input type="radio" name="payment_method" value="cod">
+                            <span class="payment-label">
+                                <strong>Cash on Delivery</strong>
+                                <small>Pay when you receive your order</small>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Hidden amount field -->
+                <input type="hidden" name="amount" value="{{ total_amount }}">
+                
+                <!-- Order Notes -->
+                <div class="form-section">
+                    <h3>Order Notes (Optional)</h3>
+                    <div class="form-group">
+                        <label for="notes">Special Instructions:</label>
+                        <textarea id="notes" name="notes" rows="3" placeholder="Any special delivery instructions..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="form-section">
+                    <button type="submit" class="btn btn-primary btn-large">
+                        Complete Order - ₱{{ total_amount|floatformat:2 }}
+                    </button>
+                    
+                    <p class="checkout-note">
+                        By placing your order, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

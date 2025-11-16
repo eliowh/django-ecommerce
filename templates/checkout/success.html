@@ -1,11 +1,352 @@
 {% extends 'base.html' %}
 
-{% block title %}Payment Success{% endblock %}
+{% block title %}Order Confirmed{% endblock %}
 
 {% block content %}
-  <div class="container">
-    <h1>Payment Successful!</h1>
-    <p>Thank you for your purchase. Your order has been processed successfully.</p>
-    <a href="{% url 'products:list' %}" class="btn">Continue Shopping</a>
-  </div>
+<div class="container">
+    <!-- Screen View -->
+    <div class="order-success-card screen-only">
+        <div class="success-header">
+            <div class="success-icon">✓</div>
+            <h1>Order Confirmed!</h1>
+            <p class="success-message">Thank you for your purchase. Your order has been placed successfully.</p>
+        </div>
+        
+        {% if request.session.last_order %}
+        <div class="order-details">
+            <h2>Order Details</h2>
+            <div class="detail-row">
+                <span class="label">Transaction ID:</span>
+                <span class="value">{{ request.session.last_order.transaction_id }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Receipt Number:</span>
+                <span class="value">{{ request.session.last_order.receipt_number }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Customer:</span>
+                <span class="value">{{ request.session.last_order.customer_name }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Email:</span>
+                <span class="value">{{ request.session.last_order.customer_email }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Payment Method:</span>
+                <span class="value">
+                    {% if request.session.last_order.payment_method == 'credit_card' %}
+                        Credit Card
+                    {% elif request.session.last_order.payment_method == 'gcash' %}
+                        GCash
+                    {% else %}
+                        Cash on Delivery
+                    {% endif %}
+                </span>
+            </div>
+            <div class="detail-row total-row">
+                <span class="label">Total Amount:</span>
+                <span class="value">₱{{ request.session.last_order.amount }}</span>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="order-actions">
+            <a href="{% url 'products:list' %}" class="btn btn-primary btn-large">Continue Shopping</a>
+            <button onclick="printReceipt()" class="btn btn-secondary">Print Receipt</button>
+        </div>
+        
+        <div class="order-note">
+            <p><strong>What's next?</strong></p>
+            <p>We'll process your order and contact you for delivery arrangements. 
+               {% if request.session.last_order.payment_method == 'cash_on_delivery' %}
+               Payment will be collected upon delivery.
+               {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- Receipt Print View -->
+    {% if request.session.last_order %}
+    <div class="receipt print-only">
+        <div class="receipt-header">
+            <h1>MILK SHOP</h1>
+            <p>Local Fresh Products</p>
+            <p>========================</p>
+        </div>
+        
+        <div class="receipt-info">
+            <p><strong>RECEIPT</strong></p>
+            <p>No: {{ request.session.last_order.receipt_number }}</p>
+            <p>Date: {% now "M d, Y H:i" %}</p>
+            <p>Transaction: {{ request.session.last_order.transaction_id }}</p>
+            <p>------------------------</p>
+        </div>
+        
+        <div class="receipt-customer">
+            <p><strong>Customer:</strong> {{ request.session.last_order.customer_name }}</p>
+            <p><strong>Email:</strong> {{ request.session.last_order.customer_email }}</p>
+            <p>------------------------</p>
+        </div>
+        
+        <div class="receipt-items">
+            <p><strong>ITEMS:</strong></p>
+            {% for item in request.session.last_order.cart_items %}
+            <div class="receipt-item">
+                <p>{{ item.product.name }}</p>
+                <p>{{ item.quantity }} x ₱{{ item.price }} = ₱{{ item.total_price }}</p>
+            </div>
+            {% endfor %}
+            <p>------------------------</p>
+        </div>
+        
+        <div class="receipt-total">
+            <p>Subtotal: ₱{{ request.session.last_order.subtotal }}</p>
+            <p>Shipping: ₱{{ request.session.last_order.shipping_fee }}</p>
+            <p>Tax (12%): ₱{{ request.session.last_order.tax_amount }}</p>
+            <p>========================</p>
+            <p><strong>TOTAL: ₱{{ request.session.last_order.amount }}</strong></p>
+            <p>========================</p>
+        </div>
+        
+        <div class="receipt-payment">
+            <p><strong>Payment Method:</strong></p>
+            <p>
+                {% if request.session.last_order.payment_method == 'credit_card' %}
+                    Credit Card
+                {% elif request.session.last_order.payment_method == 'gcash' %}
+                    GCash
+                {% else %}
+                    Cash on Delivery
+                {% endif %}
+            </p>
+            <p>------------------------</p>
+        </div>
+        
+        <div class="receipt-footer">
+            <p>Thank you for shopping!</p>
+            <p>Please come again.</p>
+            <p style="margin-top: 20px; font-size: 10px;">{{ request.session.last_order.timestamp }}</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function printReceipt() {
+    window.print();
+}
+</script>
+
+<style>
+.order-success-card {
+    max-width: 600px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.success-header {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    margin: 0 auto 20px;
+}
+
+.success-header h1 {
+    margin: 0 0 10px 0;
+    font-size: 2rem;
+}
+
+.success-message {
+    margin: 0;
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.order-details {
+    padding: 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.order-details h2 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 1.3rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row.total-row {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #28a745;
+    border-top: 2px solid #eee;
+    padding-top: 15px;
+    margin-top: 10px;
+}
+
+.label {
+    color: #666;
+    font-weight: 500;
+}
+
+.value {
+    color: #333;
+    font-weight: 600;
+}
+
+.order-actions {
+    padding: 30px;
+    text-align: center;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.order-note {
+    background: #f8f9fa;
+    padding: 20px 30px;
+    color: #666;
+}
+
+.order-note p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #c0392b, #a93226);
+    color: white;
+    text-decoration: none;
+}
+
+/* Print Styles - Receipt Format */
+.print-only {
+    display: none;
+}
+
+.screen-only {
+    display: block;
+}
+
+@media print {
+    .screen-only {
+        display: none !important;
+    }
+    
+    .print-only {
+        display: block !important;
+    }
+    
+    .receipt {
+        width: 80mm;
+        margin: 0;
+        padding: 10px;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        line-height: 1.2;
+        color: black;
+        background: white;
+    }
+    
+    .receipt-header {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    
+    .receipt-header h1 {
+        font-size: 16px;
+        margin: 0;
+        font-weight: bold;
+    }
+    
+    .receipt-header p {
+        margin: 2px 0;
+        font-size: 11px;
+    }
+    
+    .receipt-info p,
+    .receipt-customer p,
+    .receipt-items p,
+    .receipt-total p,
+    .receipt-payment p,
+    .receipt-footer p {
+        margin: 2px 0;
+        font-size: 11px;
+    }
+    
+    .receipt-item {
+        margin: 3px 0;
+    }
+    
+    .receipt-item p:first-child {
+        font-weight: bold;
+    }
+    
+    .receipt-total p:last-of-type {
+        font-size: 14px;
+        font-weight: bold;
+    }
+    
+    .receipt-footer {
+        text-align: center;
+        margin-top: 10px;
+    }
+    
+    /* Hide everything else on print */
+    body * {
+        visibility: hidden;
+    }
+    
+    .receipt, .receipt * {
+        visibility: visible;
+    }
+    
+    .receipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+}
+</style>
 {% endblock %}

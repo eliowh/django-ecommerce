@@ -1,19 +1,49 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.contrib import messages
+from .forms import UserRegistrationForm
+from apps.cart.views import merge_session_cart_to_user_cart
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        # Use the custom form with email field
+        form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return HttpResponseRedirect(reverse('products:list'))
+            # Merge session cart with new user's cart
+            merge_session_cart_to_user_cart(request, user)
+            messages.success(request, f'Account created successfully for {user.username}!')
+            return redirect('products:list')
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
-        form = UserCreationForm()
+        form = UserRegistrationForm()
     return render(request, 'users/register.html', {'form': form})
+
+def custom_login(request):
+    """Custom login view that merges session cart with user cart"""
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                # Merge session cart with user cart
+                merge_session_cart_to_user_cart(request, user)
+                messages.success(request, f'Welcome back, {user.username}!')
+                return redirect('products:list')
+        else:
+            messages.error(request, 'Invalid username or password.')
+    else:
+        form = AuthenticationForm()
+    
+    return render(request, 'users/login.html', {'form': form})
 
 def profile(request):
     return render(request, 'users/profile.html')

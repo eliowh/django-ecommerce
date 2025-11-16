@@ -7,6 +7,18 @@
         <h2 class="page-title">Welcome back</h2>
         <p class="page-subtitle">Log in to continue your shopping.</p>
 
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Login failed:</strong> Please check your username and password.
+            </div>
+        {% endif %}
+
         <form method="post" class="page-form">
             {% csrf_token %}
             {{ form.non_field_errors }}

@@ -214,6 +214,20 @@
     max-width: 480px;
 }
 
+.messages-container {
+    margin-top: 15px;
+}
+
+.messages-container .alert {
+    background: rgba(212, 237, 218, 0.9);
+    border: 1px solid rgba(195, 230, 203, 0.8);
+    color: #155724;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
 /* pill filter buttons */
 .products-filters {
     display: flex;
@@ -244,6 +258,12 @@
     position: relative;
     padding: 24px 80px 32px;
     background: linear-gradient(120deg, #fdfaff 40%, #f7f3ff 100%);
+}
+
+.products-display-area {
+    position: relative;
+    padding: 24px 80px 32px;
+    margin-top: 20px;
 }
 
 .products-carousel {
@@ -367,6 +387,8 @@
 .product-actions {
     margin-top: 12px;
 }
+
+
 
 .product-shop-button {
     width: 100%;
