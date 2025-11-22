@@ -1,6 +1,10 @@
 # Django E-commerce Application
 
-This is a Django-based e-commerce application that allows users to browse products, manage a shopping cart, and process orders. 
+**IT 403 WMAD - Elective 5 (WST 3)**  
+**Bulacan State University**  
+**College of Information and Communications Technology**
+
+This is a comprehensive Django-based e-commerce application that provides a complete online shopping platform with user management, product catalog, shopping cart functionality, and order processing capabilities. 
 
 ## Project Structure
 
@@ -131,11 +135,77 @@ If you want, I can update `requirements.txt` to add `python-dotenv` and open a P
 
 ## Features
 
-- User registration and authentication
-- Product listing and detail views
-- Shopping cart functionality
-- Order processing and payment integration
+### Core Functionality
+- **User Management**: Registration, authentication, and profile management
+- **Product Catalog**: Categorized product listing with search and filtering
+- **Shopping Cart**: Add, modify, and manage cart items
+- **Order Processing**: Complete order workflow with address management
+- **Payment Integration**: Secure payment processing with Stripe
+- **Admin Panel**: Comprehensive administrative tools
+
+### Technical Features
+- **RESTful API**: Django REST Framework implementation
+- **Responsive Design**: Mobile-friendly user interface
+- **Security**: Secure authentication and data protection
+- **Database**: Optimized database schema with proper relationships
+- **Testing**: Comprehensive test coverage
+
+## Quick Start
+
+### Sample Data Population
+After completing the installation steps above, populate the database with sample data:
+
+```bash
+python manage.py populate_sample_data
+```
+
+This will create:
+- Sample user accounts (username: john_doe, jane_smith, mike_wilson, admin)
+- Product categories (Electronics, Clothing, Books, etc.)
+- Sample products with realistic data
+- Shopping carts and orders for demonstration
+
+### Default Login Credentials
+- **Admin User**: username: `admin`, password: `admin123`
+- **Customer**: username: `john_doe`, password: `testpass123`
+
+## Project Deliverables (IT 403)
+
+### ✅ Completed Deliverables
+1. **System Proposal** - Available in `docs/SYSTEM_PROPOSAL.md`
+2. **Django Project Folder** - Complete source code with working functionality
+3. **Database (SQLite)** - Includes migrations and sample data
+4. **Documentation** - Comprehensive project documentation in `docs/`
+5. **ERD (Entity Relationship Diagram)** - Mermaid diagram in documentation
+
+### 📁 Project Structure for Submission
+```
+django-ecommerce/
+├── docs/
+│   ├── SYSTEM_PROPOSAL.md     # System proposal document
+│   ├── PROJECT_DOCUMENTATION.md  # Complete project documentation
+│   ├── api.md                 # API documentation
+│   └── architecture.md        # System architecture
+├── apps/                      # Django applications
+├── templates/                 # HTML templates
+├── static/                    # Static files (CSS, JS, images)
+├── db.sqlite3                # Database with sample data
+├── manage.py                 # Django management script
+├── requirements.txt          # Python dependencies
+└── README.md                 # This file
+```
 
 ## Documentation
 
-Refer to the `docs/` directory for detailed architecture and API documentation.
+Refer to the `docs/` directory for detailed documentation:
+- **System Proposal**: `docs/SYSTEM_PROPOSAL.md`
+- **Project Documentation**: `docs/PROJECT_DOCUMENTATION.md`
+- **API Documentation**: `docs/api.md`
+- **Architecture Guide**: `docs/architecture.md`
+
+## Academic Information
+
+**Course**: IT 403 WMAD - Elective 5 (WST 3)  
+**Institution**: Bulacan State University  
+**College**: College of Information and Communications Technology  
+**Academic Year**: 2025
