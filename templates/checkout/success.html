@@ -8,7 +8,7 @@
     <div class="order-success-card screen-only">
         <div class="success-header">
             <div class="success-icon">✓</div>
-            <h1>Order Confirmed!</h1>
+            <h1 style="color: #000;">Order Confirmed!</h1>
             <p class="success-message">Thank you for your purchase. Your order has been placed successfully.</p>
         </div>
         
@@ -45,7 +45,7 @@
             </div>
             <div class="detail-row total-row">
                 <span class="label">Total Amount:</span>
-                <span class="value">₱{{ request.session.last_order.amount }}</span>
+                <span class="value">₱{{ request.session.last_order.amount|floatformat:2 }}</span>
             </div>
         </div>
         {% endif %}
@@ -93,18 +93,18 @@
             {% for item in request.session.last_order.cart_items %}
             <div class="receipt-item">
                 <p>{{ item.product.name }}</p>
-                <p>{{ item.quantity }} x ₱{{ item.price }} = ₱{{ item.total_price }}</p>
+                <p>{{ item.quantity }} x ₱{{ item.price|floatformat:2 }} = ₱{{ item.total_price|floatformat:2 }}</p>
             </div>
             {% endfor %}
             <p>------------------------</p>
         </div>
         
         <div class="receipt-total">
-            <p>Subtotal: ₱{{ request.session.last_order.subtotal }}</p>
-            <p>Shipping: ₱{{ request.session.last_order.shipping_fee }}</p>
-            <p>Tax (12%): ₱{{ request.session.last_order.tax_amount }}</p>
+            <p>Subtotal: ₱{{ request.session.last_order.subtotal|floatformat:2 }}</p>
+            <p>Shipping: ₱{{ request.session.last_order.shipping_fee|floatformat:2 }}</p>
+            <p>Tax (12%): ₱{{ request.session.last_order.tax_amount|floatformat:2 }}</p>
             <p>========================</p>
-            <p><strong>TOTAL: ₱{{ request.session.last_order.amount }}</strong></p>
+            <p><strong>TOTAL: ₱{{ request.session.last_order.amount|floatformat:2 }}</strong></p>
             <p>========================</p>
         </div>
         
@@ -223,8 +223,9 @@ function printReceipt() {
     padding: 30px;
     text-align: center;
     display: flex;
+    flex-direction: column;
     gap: 15px;
-    justify-content: center;
+    align-items: center;
 }
 
 .order-note {
@@ -241,6 +242,8 @@ function printReceipt() {
 .btn-secondary {
     background: #6c757d;
     color: white;
+    padding: 20px;
+    font-weight: 600;
 }
 
 .btn-secondary:hover {
@@ -267,6 +270,10 @@ function printReceipt() {
 
 .screen-only {
     display: block;
+}
+
+.order-actions .btn {
+    width: 80%;
 }
 
 @media print {

@@ -17,13 +17,11 @@
 
         <form method="post" class="page-form">
             {% csrf_token %}
-            {{ form.non_field_errors }}
 
             {% for field in form %}
                 <div>
                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                     {{ field }}
-                    {{ field.errors }}
                 </div>
             {% endfor %}
 

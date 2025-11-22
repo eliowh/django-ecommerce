@@ -1,6 +1,15 @@
-/* Global default font */
+/* Global default font and sticky footer layout */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 /* Notification System Styles */
@@ -148,6 +157,7 @@ header nav a:hover {
 main {
     padding-top: 1rem;
     padding-bottom: 2rem;
+    flex: 1;
 }
 
 footer {
@@ -157,6 +167,7 @@ footer {
     color: #777;
     border-top: 1px solid #ddd;
     background-color: #fff;
+    margin-top: auto;
 }
 
 /* ========== Typography ========== */
@@ -612,12 +623,20 @@ input[type="text"],
 input[type="number"],
 input[type="email"],
 input[type="password"],
-select {
+select,
+textarea {
     width: 100%;
     padding: 0.4rem 0.5rem;
     border-radius: 4px;
     border: 1px solid #ccc;
     font-size: 0.9rem;
+    font-family: inherit;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.4;
 }
 
 input:focus,
@@ -978,20 +997,20 @@ tr:nth-child(even) {
     letter-spacing: 0.14em;
     margin: 0 0 4px;
     opacity: 0.9;
-    color: #fdfcfb;
+    color: #000000;
 }
 
 .product-name {
     margin: 0 0 4px;
     font-size: 16px;
     font-weight: 700;
-    color: #ffffff;
+    color: #000000;
 }
 
 .product-size {
     margin: 0;
     font-size: 12px;
-    color: #fef8f1;
+    color: #000000;
 }
 
 /* shop button */

@@ -64,7 +64,7 @@ def process_payment(request):
         payment_method = request.POST.get('payment_method', 'cash_on_delivery')
         
         # Customer details
-        customer_name = f"{request.POST.get('first_name', '')} {request.POST.get('last_name', '')}".strip()
+        customer_name = request.POST.get('full_name', '').strip()
         customer_email = request.POST.get('email', '')
         customer_phone = request.POST.get('phone', '')
         

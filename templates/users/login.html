@@ -13,26 +13,17 @@
             {% endfor %}
         {% endif %}
 
-        {% if form.errors %}
-            <div class="alert alert-danger">
-                <strong>Login failed:</strong> Please check your username and password.
-            </div>
-        {% endif %}
-
         <form method="post" class="page-form">
             {% csrf_token %}
-            {{ form.non_field_errors }}
 
             <div>
                 <label for="{{ form.username.id_for_label }}">Username</label>
                 {{ form.username }}
-                {{ form.username.errors }}
             </div>
 
             <div>
                 <label for="{{ form.password.id_for_label }}">Password</label>
                 {{ form.password }}
-                {{ form.password.errors }}
             </div>
 
             <button type="submit" class="primary-btn">Log in</button>

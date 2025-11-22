@@ -2,12 +2,16 @@ from django import forms
 from .models import User
 
 class UserRegistrationForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput)
-    confirm_password = forms.CharField(widget=forms.PasswordInput)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Enter your password', 'class': 'form-control'}))
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Enter your password again', 'class': 'form-control'}))
 
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'confirm_password']
+        widgets = {
+            'username': forms.TextInput(attrs={'placeholder': 'Enter your username', 'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'Enter your email', 'class': 'form-control'}),
+        }
 
     def clean(self):
         cleaned_data = super().clean()
@@ -25,5 +29,5 @@ class UserRegistrationForm(forms.ModelForm):
         return user
 
 class UserLoginForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Enter your username', 'class': 'form-control'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Enter your password', 'class': 'form-control'}))

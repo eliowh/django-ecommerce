@@ -338,8 +338,8 @@
 
 .product-image-wrap img {
     position: relative;
-    max-height: 160px;
-    max-width: 90px;
+    max-height: 300px;
+    max-width: 140px;
     object-fit: contain;
 }
 
@@ -367,20 +367,20 @@
     letter-spacing: 0.14em;
     margin: 0 0 4px;
     opacity: 0.9;
-    color: #fdfcfb;
+    color: #000000 !important;
 }
 
 .product-name {
     margin: 0 0 4px;
     font-size: 16px;
     font-weight: 700;
-    color: #ffffff;
+    color: #000000 !important;
 }
 
 .product-size {
     margin: 0;
     font-size: 12px;
-    color: #fef8f1;
+    color: #000000 !important;
 }
 
 /* shop button */
